@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <!-- 本工程 -->
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.ares5k</groupId>
+    <artifactId>ares5k-zookeeper-distribute-lock</artifactId>
+    <version>1.0-SNAPSHOT</version>
+
+    <!-- 自定义属性 -->
+    <properties>
+        <!-- 指定 lombok版本 -->
+        <lombok.version>1.18.12</lombok.version>
+        <!-- 指定 hu-tool版本 -->
+        <hu.tool.version>5.0.7</hu.tool.version>
+        <!-- 指定 curator版本 -->
+        <curator.version>5.1.0</curator.version>
+        <!-- 指定 spring版本 -->
+        <spring.version>5.2.1.RELEASE</spring.version>
+        <!-- 指定 slf4j 和 log4j 的适配器版本 -->
+        <slf4j-log4j12.version>1.7.26</slf4j-log4j12.version>
+        <!-- 指定 java8 -->
+        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+    </properties>
+
+    <!-- 依赖 -->
+    <dependencies>
+        <!-- spring -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- aop 注解 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <!-- zookeeper java客户端 - curator -->
+        <dependency>
+            <groupId>org.apache.curator</groupId>
+            <artifactId>curator-recipes</artifactId>
+            <version>${curator.version}</version>
+            <!-- 排除slf4j 和 log4j 的适配器依赖 -->
+            <exclusions>
+                <exclusion>
+                    <artifactId>slf4j-api</artifactId>
+                    <groupId>org.slf4j</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- slf4j 和 log4j 的适配器, 解决依赖冲突问题 -->
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-log4j12</artifactId>
+            <version>${slf4j-log4j12.version}</version>
+        </dependency>
+        <!-- hu-tool -->
+        <dependency>
+            <groupId>cn.hutool</groupId>
+            <artifactId>hutool-all</artifactId>
+            <version>${hu.tool.version}</version>
+        </dependency>
+        <!-- lombok -->
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+        </dependency>
+    </dependencies>
+
+</project>
