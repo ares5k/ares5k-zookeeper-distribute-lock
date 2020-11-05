@@ -23,7 +23,7 @@ QQ: 16891544<br/>
  互斥锁-未获取到锁时无限等待直到获取锁成功-同一线程同一节点不可重入
 
 ```java
-@Lock(businessPath = "/product", waitTime = -1, reentrant = false)
+@Lock(bizPath = "/product", waitTime = -1, reentrant = false)
 public void mutex() throws InterruptedException {
     System.out.println("获取互斥锁");
     Thread.sleep(Long.MAX_VALUE);
@@ -35,7 +35,7 @@ public void mutex() throws InterruptedException {
 互斥锁- 未获取到锁时无限等待直到获取锁成功-同一线程同一节点可重入
 
 ```java
-@Lock(businessPath = "/product", waitTime = -1)
+@Lock(bizPath = "/product", waitTime = -1)
 public void mutex(boolean over) throws InterruptedException {
     System.out.println("获取互斥锁");
     if (over) {
@@ -61,7 +61,7 @@ public void errorProcess() throws InterruptedException {
         }
     }
 }
-@Lock(businessPath = "/product", waitTime = 5000)
+@Lock(bizPath = "/product", waitTime = 5000)
 public void mutex() throws InterruptedException, LockException {
         System.out.println("获取互斥锁");
     Thread.sleep(Long.MAX_VALUE);
@@ -73,7 +73,7 @@ public void mutex() throws InterruptedException, LockException {
 写锁:  同一线程同一节点-可重入写和读, 不同线程同一节点时读和写都阻塞, 写锁释放后, 所有排队的读锁都被唤醒
 
 ```java
-@WriteLock(businessPath = "/product", waitTime = -1)
+@WriteLock(bizPath = "/product", waitTime = -1)
 public void write(boolean over) throws InterruptedException, LockException {
     System.out.println("获取写锁");
     if (over) {
@@ -89,7 +89,7 @@ public void write(boolean over) throws InterruptedException, LockException {
 读锁-如果写锁没有占用, 读锁之间是非阻塞的
 
 ```java
-@ReadLock(businessPath = "/product", waitTime = -1)
+@ReadLock(bizPath = "/product", waitTime = -1)
 public void read() throws InterruptedException, LockException {
     System.out.println("获取读锁");
     Thread.sleep(Long.MAX_VALUE);
