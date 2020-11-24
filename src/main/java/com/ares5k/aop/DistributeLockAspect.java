@@ -157,13 +157,16 @@ public class DistributeLockAspect {
 
         //线程是否可以重入
         if (lockAnnotation.reentrant()) {
-            //防止第一次并发创建
-            synchronized(this) {
-                //缓存中是否有当前节点的互斥锁处理对象
-                if (ObjectUtil.isEmpty((lockProcess = mutexLockCache.get(path)))) {
-                    //缓存中没有互斥锁处理对象时, 创建互斥锁处理对象并加入缓存
-                    lockProcess = new LockProcess(MUTEX_LOCK_ROOT_PATH + path, curatorClient);
-                    mutexLockCache.put(path, lockProcess);
+            //缓存中是否有当前节点的互斥锁处理对象
+            if (ObjectUtil.isEmpty((lockProcess = mutexLockCache.get(path)))) {
+                //防止第一次并发创建
+                synchronized (mutexLockCache) {
+                    //双重验证
+                    if (ObjectUtil.isEmpty((lockProcess = mutexLockCache.get(path)))) {
+                        //缓存中没有互斥锁处理对象时, 创建互斥锁处理对象并加入缓存
+                        lockProcess = new LockProcess(MUTEX_LOCK_ROOT_PATH + path, curatorClient);
+                        mutexLockCache.put(path, lockProcess);
+                    }
                 }
             }
         } else {
@@ -192,20 +195,22 @@ public class DistributeLockAspect {
         //zookeeper节点必须以 '/'开头
         String path = processPath(readLockAnnotation.bizPath());
 
-        //防止第一次并发创建
-        synchronized(this) {
-            //可重入读写锁缓存中是否有读锁对象
-            if (CollUtil.isNotEmpty(readWriteLockCache.get(path))) {
-                //有读锁对象就从缓存中获取
-                readLockProcess = readWriteLockCache.get(path).get(LockEnum.READ);
-            } else {
-                //可重入读写锁缓存中没有读锁对象, 就尝试从读锁缓存中获取
-
-                //读锁缓存中是否有当前节点的读锁处理对象
-                if (ObjectUtil.isEmpty(readLockProcess = readLockCache.get(path))) {
-                    //缓存中没有读锁处理对象时, 创建读锁处理对象并加入读锁缓存
-                    readLockProcess = new ReadLockProcess(READ_WRITE_LOCK_ROOT_PATH + path, curatorClient);
-                    readLockCache.put(path, readLockProcess);
+        //可重入读写锁缓存中是否有读锁对象
+        if (CollUtil.isNotEmpty(readWriteLockCache.get(path))) {
+            //有读锁对象就从缓存中获取
+            readLockProcess = readWriteLockCache.get(path).get(LockEnum.READ);
+        } else {
+            //可重入读写锁缓存中没有读锁对象, 就尝试从读锁缓存中获取
+            //读锁缓存中是否有当前节点的读锁处理对象
+            if (ObjectUtil.isEmpty(readLockProcess = readLockCache.get(path))) {
+                //防止第一次并发创建
+                synchronized (readLockCache) {
+                    //双重验证
+                    if (ObjectUtil.isEmpty(readLockProcess = readLockCache.get(path))) {
+                        //缓存中没有读锁处理对象时, 创建读锁处理对象并加入读锁缓存
+                        readLockProcess = new ReadLockProcess(READ_WRITE_LOCK_ROOT_PATH + path, curatorClient);
+                        readLockCache.put(path, readLockProcess);
+                    }
                 }
             }
         }
@@ -234,7 +239,8 @@ public class DistributeLockAspect {
         //线程是否可以重入
         if (writeLockAnnotation.reentrant()) {
             //防止第一次并发创建
-            synchronized(this) {
+            synchronized (readWriteLockCache) {
+
                 //读写锁缓存中是否有当前节点的写锁处理对象
                 if (CollUtil.isEmpty(readWriteLockCache.get(path))) {
                     //缓存中没有写锁处理对象时, 创建写锁处理对象
